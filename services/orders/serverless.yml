@@ -1,0 +1,21 @@
+service: orders
+frameworkVersion: '2 || 3'
+
+# plugins:
+#   - serverless-webpack
+
+# package:
+#   individually: true
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: '20201221'
+
+functions:
+  order:
+    handler: order.handler
+    events:
+      - httpApi:
+          path: /orders
+          method: get

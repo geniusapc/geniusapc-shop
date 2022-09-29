@@ -1,0 +1,15 @@
+service: products
+frameworkVersion: '2 || 3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: '20201221'
+
+functions:
+  products:
+    handler: product.handler
+    events:
+      - httpApi:
+          path: /products
+          method: get

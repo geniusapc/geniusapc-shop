@@ -1,0 +1,7 @@
+services:
+  orderService:
+    path: services/orders
+  basketService:
+    path: services/baskets
+  productService:
+    path: services/products
