@@ -1,14 +1,35 @@
 service: basket
-
+custom:
+  basketTableName: basket-table
+  
 provider:
   name: aws
   runtime: nodejs14.x
   lambdaHashingVersion: '20201221'
+  environment:
+    tableName: ${self:custom.basketTableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: '*'
 
 functions:
-  player:
-    handler: basket.handler
+  basket:
+    handler: endpoints/getBasketById.handler
     events:
-      - httpApi:
-          path: /baskets
-          method: get
+      - httpApi: GET /baskets/{id}
+
+resources:
+  Resources:
+    BasketDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.basketTableName}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST

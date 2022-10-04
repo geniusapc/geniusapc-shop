@@ -1,15 +1,45 @@
 service: products
 frameworkVersion: '2 || 3'
 
+plugins:
+  - serverless-plugin-typescript
+
+
+custom:
+  productTableName: product-table
+
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   lambdaHashingVersion: '20201221'
+  environment:
+    tableName: ${self:custom.productTableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: '*'
 
 functions:
   products:
-    handler: product.handler
+    handler: index.handler
     events:
-      - httpApi:
-          path: /products
-          method: get
+      - httpApi: GET /products
+      - httpApi: POST /products
+      - httpApi: GET /products/{id}
+      - httpApi: PUT /products/{id}
+      - httpApi: DELETE /products/{id}
+
+resources:
+  Resources:
+    ProductDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.productTableName}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
